@@ -1,4 +1,4 @@
-# Characteristics Associated with Severe and Fatal Motor Vehicle Crash Outcomes in the United States, 2022–2024
+# Characteristics Associated with Severe and Fatal Motor Vehicle Crash Outcomes in the United States, 2022-2024
 
 ## Project overview
 
@@ -42,44 +42,33 @@ National Highway Traffic Safety Administration, National Center for Statistics a
 
 CRSS is a nationally representative probability sample of police-reported crashes of all severities. NHTSA deliberately oversamples severe crashes, so every record carries a sampling weight (`WEIGHT`) that indicates how many crashes nationwide it represents. All estimates in this project are weighted. Without weights, 13.2% of sampled crashes are severe or fatal, compared with 3.2% nationally.
 
-Two files are used for each year:
+Two files are used for each year, so there are six files in total:
 
 | File | One row per | Used for |
 |---|---|---|
 | `accident.csv` | crash | Outcome, alcohol, time, lighting, weather, urban/rural, junction, interstate, sampling weight |
 | `vehicle.csv` | vehicle | Speeding, aggregated to one value per crash |
 
-After cleaning, the analytic dataset contains **155,308 crashes**. The regression uses 148,966 crashes after excluding those with unknown speeding or interstate status.
+After cleaning, the analytic dataset contains 155,308 crashes. The regression uses 148,966 crashes after excluding those with unknown speeding or interstate status.
 
-The raw data files are **not included** in this repository. They total about 600 MB, which exceeds GitHub's file-size limits. See [Steps to run the analysis](#steps-to-run-the-analysis) for how to obtain them.
+The raw data files are not included in this repository. See [Steps to run the analysis](#steps-to-run-the-analysis) for how to obtain them.
 
 ## Repository contents
 
 ```
 Crash-Severity-Analysis/
-├── README.md                     ← this file
-├── requirements.txt              ← Python packages needed to run the notebook
-├── .gitignore                    ← excludes data/raw/ from version control
+├── README.md                     
+├── requirements.txt              
+├── .gitignore                    
 ├── notebooks/
-│   └── crash_severity_analysis_simplified.ipynb   ← full analysis
+│   └── crash_severity_analysis_simplified.ipynb   
 ├── data/
-│   ├── raw/                      ← place the CRSS CSV files here (not tracked)
-│   └── processed/                ← created by the notebook
-│       ├── crss_crash_analytic_2022_2024.csv      ← cleaned crash-level dataset
-│       └── logistic_regression_odds_ratios.csv    ← final model results
-└── figures/                      ← created by the notebook (14 PNG charts)
+│   ├── raw/                      
+│   └── processed/                
+│       ├── crss_crash_analytic_2022_2024.csv      
+│       └── logistic_regression_odds_ratios.csv    
+└── figures/                     
 ```
-
-### Notebook structure
-
-| Section | Content |
-|---|---|
-| 1. Setup and data loading | Reads all `accident*.csv` / `vehicle*.csv` files and checks for duplicate crash IDs |
-| 2. Data cleaning | Defines the outcome, groups CRSS categories, aggregates speeding from vehicles to crashes |
-| 3. Exploratory data analysis | Weighted severe/fatal shares by behavior, time, environment and roadway; heatmap; ranking; stability by year |
-| 4. Weighted logistic regression | Crude odds ratios, three-step model building, final adjusted odds ratios, predicted probabilities |
-| 5. Limitations | Data and method limitations |
-| 6. Summary of findings | Main conclusions |
 
 ### Figures produced
 
@@ -125,7 +114,7 @@ cd Crash-Severity-Analysis
 
 ### 2. Download the CRSS data
 
-1. Go to the [NHTSA CRSS page](https://www.nhtsa.gov/crash-data-systems/crash-report-sampling-system) and download the **CSV** data files for **2022, 2023 and 2024**.
+1. Go to the [NHTSA CRSS page](https://www.nhtsa.gov/crash-data-systems/crash-report-sampling-system) and download the CSV data files for 2022, 2023 and 2024.
 2. From each year's download, copy the `accident.csv` and `vehicle.csv` files into `data/raw/`.
 3. Because every year uses the same file names, rename them so they do not overwrite each other. Each accident file must keep the same suffix as its vehicle file:
 
@@ -136,7 +125,7 @@ data/raw/
 └── accident_2.csv    vehicle_2.csv    ← 2024
 ```
 
-Any names work as long as they start with `accident` / `vehicle` and the suffixes match. The notebook reads the year from the `YEAR` column inside each file, not from the file name.
+Any names work as long as they start with `accident` / `vehicle` and the suffixes match. The notebook will read the year from the `YEAR` column inside each file, not from the file name.
 
 ### 3. Install the packages
 
@@ -154,20 +143,12 @@ jupyter notebook notebooks/crash_severity_analysis_simplified.ipynb
 
 Then select **Kernel → Restart & Run All**. A full run takes about one minute on a typical laptop. The notebook creates `data/processed/` and `figures/` automatically and saves all outputs there.
 
-### Troubleshooting
-
-| Error | Cause and fix |
-|---|---|
-| `ModuleNotFoundError: No module named 'statsmodels'` | The package is not installed in the notebook's environment. Run `%pip install statsmodels` in a notebook cell, then restart the kernel. |
-| `ValueError: No objects to concatenate` | No data files were found. Run `print(RAW)` to see where the notebook is looking, and make sure the CSV files are in that `data/raw/` folder. |
-| `FileNotFoundError: Could not find matching file …` | An `accident` file has no `vehicle` file with the same suffix. Check the file names in `data/raw/`. |
-
 ## Methods in brief
 
-- **Weights.** All percentages use the CRSS sampling weight. `WEIGHT / 3` gives average crashes per year across the three pooled years.
+- **Weights:** All percentages use the CRSS sampling weight. `WEIGHT / 3` gives average crashes per year across the three pooled years.
 - **Speeding** is aggregated from vehicle to crash: *Yes* if any vehicle was speeding, *Unknown* if none was but at least one had unknown status, otherwise *No*.
-- **Model.** The regression is a logistic regression (`statsmodels` GLM, binomial family) with normalized CRSS weights. Standard errors are cluster-robust by primary sampling unit (`PSU_VAR`). The model is built in three steps (behavioral → + time → full) to show how each association changes as other characteristics are added.
-- **Night vs lighting.** The model uses *night* rather than *lighting* because the two overlap almost completely: 95% of night crashes occur in the dark.
+- **Model:** The regression is a logistic regression (`statsmodels` GLM, binomial family) with normalized CRSS weights. Standard errors are cluster-robust by primary sampling unit (`PSU_VAR`). The model is built in three steps (behavioral → + time → full) to show how each association changes as other characteristics are added.
+- **Night vs lighting:** The model uses *night* rather than *lighting* because the two overlap almost completely: 95% of night crashes occur in the dark.
 
 ## Limitations
 

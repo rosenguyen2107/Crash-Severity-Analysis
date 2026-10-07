@@ -57,17 +57,18 @@ The raw data files are not included in this repository. See [Steps to run the an
 
 ```
 Crash-Severity-Analysis/
-├── README.md                     
+├── README.md                   
 ├── requirements.txt              
-├── .gitignore                    
-├── notebooks/
-│   └── crash_severity_analysis_simplified.ipynb   
+├── .gitignore                   
+├── notebook/
+│   └── crash_severity_analysis.ipynb   
 ├── data/
 │   ├── raw/                      
 │   └── processed/                
-│       ├── crss_crash_analytic_2022_2024.csv      
-│       └── logistic_regression_odds_ratios.csv    
-└── figures/                     
+│       ├── crss_crash_analytic_2022_2024.csv     
+│       ├── logistic_regression_odds_ratios.csv    
+│       └── logistic_regression_design_based_check.csv 
+└── figures/                                    
 ```
 
 ### Figures produced
@@ -101,6 +102,7 @@ Crash-Severity-Analysis/
 | `numpy` | Weighted averages and numerical operations |
 | `matplotlib` | All charts |
 | `statsmodels` | Weighted logistic regression |
+| `scipy` | Design-based check of standard errors (*t* distribution) |
 | `ipython` | Displaying tables in the notebook |
 
 ## Steps to run the analysis
@@ -138,7 +140,7 @@ With Anaconda, you can use `conda install pandas numpy matplotlib statsmodels ju
 ### 4. Run the notebook
 
 ```bash
-jupyter notebook notebooks/crash_severity_analysis_simplified.ipynb
+jupyter notebook notebooks/crash_severity_analysis.ipynb
 ```
 
 Then select **Kernel → Restart & Run All**. A full run takes about one minute on a typical laptop. The notebook creates `data/processed/` and `figures/` automatically and saves all outputs there.
@@ -147,14 +149,14 @@ Then select **Kernel → Restart & Run All**. A full run takes about one minute 
 
 - **Weights:** All percentages use the CRSS sampling weight. `WEIGHT / 3` gives average crashes per year across the three pooled years.
 - **Speeding** is aggregated from vehicle to crash: *Yes* if any vehicle was speeding, *Unknown* if none was but at least one had unknown status, otherwise *No*.
-- **Model:** The regression is a logistic regression (`statsmodels` GLM, binomial family) with normalized CRSS weights. Standard errors are cluster-robust by primary sampling unit (`PSU_VAR`). The model is built in three steps (behavioral → + time → full) to show how each association changes as other characteristics are added.
+- **Model:** The regression is a logistic regression (`statsmodels` GLM, binomial family) with normalized CRSS weights. Standard errors are cluster-robust by primary sampling unit (`PSU_VAR`). statsmodels flags this setup as "not fully supported", so the notebook also recomputes the final model's standard errors by Taylor linearization with both strata (`PSUSTRAT`) and PSUs. All main conclusions hold. Two borderline results (interchange/ramp, 2023 vs 2022) are not significant under the full design and are not interpreted. The model is built in three steps (behavioral → + time → full) to show how each association changes as other characteristics are added.
 - **Night vs lighting:** The model uses *night* rather than *lighting* because the two overlap almost completely: 95% of night crashes occur in the dark.
 
 ## Limitations
 
 - The analysis is observational, so results are associations, not causal effects.
 - Only police-reported crashes are included.
-- The regression uses a simplified version of NHTSA's full complex-survey variance method.
+- Regression p-values are approximate. The main model's standard errors ignore the sampling strata, although a design-based check confirms the main conclusions.
 - Alcohol (imputed by NHTSA when unknown), speeding and injury severity depend on police reporting.
 - About 4% of crashes with unknown speeding or interstate status are excluded from the model.
 - Driver characteristics, vehicle type and posted speed limit are not included.

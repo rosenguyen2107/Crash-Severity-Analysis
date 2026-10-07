@@ -53,43 +53,6 @@ After cleaning, the analytic dataset contains 155,308 crashes. The regression us
 
 The raw data files are not included in this repository. See [Steps to run the analysis](#steps-to-run-the-analysis) for how to obtain them.
 
-## Repository contents
-
-```
-Crash-Severity-Analysis/
-├── README.md                   
-├── requirements.txt              
-├── .gitignore                   
-├── notebook/
-│   └── crash_severity_analysis.ipynb   
-├── data/
-│   ├── raw/                      
-│   └── processed/                
-│       ├── crss_crash_analytic_2022_2024.csv     
-│       ├── logistic_regression_odds_ratios.csv    
-│       └── logistic_regression_design_based_check.csv 
-└── figures/                                    
-```
-
-### Figures produced
-
-| File | Shows |
-|---|---|
-| `01_severity_distribution.png` | Severity distribution: unweighted sample vs weighted national estimate |
-| `02_by_year.png` | Crash volume and severe/fatal share by year |
-| `03_speeding_alcohol.png` | Severe/fatal share by speeding and alcohol |
-| `04_speeding_alcohol_combined.png` | Combinations of speeding and alcohol |
-| `05_by_hour.png` | Crash volume and severity by hour of day |
-| `06_heatmap_day_hour.png` | Severe/fatal share by day of week × hour |
-| `07_night_weekend.png` | Night vs day/evening and weekend vs weekday |
-| `08_environment_roadway.png` | Lighting, weather, junction, urban/rural, interstate |
-| `09_profile_severe_vs_other.png` | Share of severe vs other crashes with each characteristic |
-| `10_unadjusted_ranking.png` | Unadjusted ranking of characteristics |
-| `11_stability_by_year.png` | Unadjusted ratios by year |
-| `12_model_building.png` | Odds ratios across the three model steps |
-| `13_forest_adjusted_vs_crude.png` | Final adjusted vs crude odds ratios |
-| `14_predicted_probabilities.png` | Predicted severe/fatal probability for example crashes |
-
 ## Required software and packages
 
 - **Python** 3.9 or later
